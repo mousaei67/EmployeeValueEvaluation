@@ -1,0 +1,118 @@
+﻿@model EmployeeValueEvaluation.Models.Employee
+
+@{
+    ViewData["Title"] = "ویرایش پرسنل";
+}
+
+<div class="container mt-4">
+
+    <h2>ویرایش پرسنل</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="Id" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger">
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Name"
+                           class="form-label">
+                        نام و نام خانوادگی
+                    </label>
+
+                    <input asp-for="Name"
+                           class="form-control" />
+
+                    <span asp-validation-for="Name"
+                          class="text-danger">
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PersonnelCode"
+                           class="form-label">
+                        کد پرسنلی
+                    </label>
+
+                    <input asp-for="PersonnelCode"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Role"
+                           class="form-label">
+                        سمت
+                    </label>
+
+                    <input asp-for="Role"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="BaseSalary"
+                           class="form-label">
+                        حقوق پایه
+                    </label>
+
+                    <input asp-for="BaseSalary"
+                           type="number"
+                           class="form-control" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="StartDate"
+                           class="form-label">
+                        تاریخ شروع همکاری
+                    </label>
+
+                    <input asp-for="StartDate"
+                           type="date"
+                           class="form-control" />
+                </div>
+
+                <div class="form-check mb-3">
+
+                    <input asp-for="IsActive"
+                           class="form-check-input" />
+
+                    <label asp-for="IsActive"
+                           class="form-check-label">
+                        فعال
+                    </label>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label asp-for="Description"
+                           class="form-label">
+                        توضیحات
+                    </label>
+
+                    <textarea asp-for="Description"
+                              class="form-control">
+                    </textarea>
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    ذخیره تغییرات
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+                    بازگشت
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>

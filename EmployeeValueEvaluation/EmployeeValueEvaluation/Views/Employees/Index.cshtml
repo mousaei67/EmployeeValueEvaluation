@@ -1,0 +1,111 @@
+﻿@model IEnumerable<EmployeeValueEvaluation.Models.Employee>
+
+@{
+    ViewData["Title"] = "پرسنل";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>مدیریت پرسنل</h2>
+
+        <a asp-action="Create" class="btn btn-primary">
+            افزودن پرسنل
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover text-center">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>ردیف</th>
+                        <th>کد پرسنلی</th>
+                        <th>نام</th>
+                        <th>سمت</th>
+                        <th>حقوق</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @{
+                        int row = 1;
+                    }
+
+                    @foreach (var employee in Model)
+                    {
+                        <tr>
+
+                            <td>@row</td>
+
+                            <td>
+                                @employee.PersonnelCode
+                            </td>
+
+                            <td>
+                                @employee.Name
+                            </td>
+
+                            <td>
+                                @employee.Role
+                            </td>
+
+                            <td>
+                                @employee.BaseSalary.ToString("N0")
+                            </td>
+
+                            <td>
+                                @if (employee.IsActive)
+                                {
+                                    <span class="badge bg-success">
+                                        فعال
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        غیرفعال
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+
+                                <a asp-action="Details"
+                                   asp-route-id="@employee.Id"
+                                   class="btn btn-info btn-sm">
+                                    جزئیات
+                                </a>
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@employee.Id"
+                                   class="btn btn-warning btn-sm">
+                                    ویرایش
+                                </a>
+
+                                <a asp-action="Delete"
+                                   asp-route-id="@employee.Id"
+                                   class="btn btn-danger btn-sm">
+                                    حذف
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        row++;
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>

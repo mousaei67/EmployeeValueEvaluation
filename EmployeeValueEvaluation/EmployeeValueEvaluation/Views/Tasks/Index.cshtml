@@ -1,0 +1,76 @@
+@model IEnumerable<TaskItem>
+@{
+    ViewData["Title"] = "کارها";
+    var employees = ViewBag.Employees as List<Employee> ?? new List<Employee>();
+    int? selected = ViewBag.SelectedEmployee as int?;
+    string StatusText(EmployeeValueEvaluation.Models.TaskStatus s) => s switch
+    {
+        EmployeeValueEvaluation.Models.TaskStatus.Completed => "تکمیل‌شده",
+        EmployeeValueEvaluation.Models.TaskStatus.InProgress => "در حال انجام",
+        EmployeeValueEvaluation.Models.TaskStatus.Pending => "در انتظار",
+        EmployeeValueEvaluation.Models.TaskStatus.Cancelled => "لغو‌شده",
+        _ => "متوقف"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">مدیریت کارها</h2>
+    <a class="btn btn-primary" asp-action="Create">ثبت کار جدید</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="employeeId" class="form-select" onchange="this.form.submit()">
+            <option value="">همه پرسنل</option>
+            @foreach (var e in employees)
+            {
+                if (selected == e.Id)
+                {
+                    <option value="@e.Id" selected>@e.Name</option>
+                }
+                else
+                {
+                    <option value="@e.Id">@e.Name</option>
+                }
+            }
+        </select>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover text-center align-middle bg-white">
+        <thead class="table-dark">
+            <tr>
+                <th>عنوان</th><th>پرسنل</th><th>اولویت</th><th>اثر</th><th>تخمین/واقعی</th>
+                <th>وضعیت</th><th>ارزیابی</th><th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td class="text-start">@t.Title</td>
+                    <td>@t.Employee?.Name</td>
+                    <td>@t.Priority</td>
+                    <td>@t.BusinessImpact</td>
+                    <td>@t.EstimatedHours / @t.ActualHours</td>
+                    <td>@StatusText(t.Status)</td>
+                    <td>
+                        @if (t.Evaluation != null)
+                        {
+                            <span class="badge bg-success">شده (@t.Evaluation.TaskScore.ToString("0.#"))</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">نشده</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@t.Id">جزئیات</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Evaluate" asp-route-id="@t.Id">ارزیابی</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,87 @@
+@model TaskItem
+@{
+    ViewData["Title"] = "جزئیات کار";
+    var c = ViewBag.Computed as TaskComputationResult;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">@Model.Title</h2>
+    <div>
+        <a class="btn btn-warning btn-sm" asp-action="Evaluate" asp-route-id="@Model.Id">ثبت/ویرایش ارزیابی</a>
+        <a class="btn btn-secondary btn-sm" asp-action="Index">بازگشت</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header">اطلاعات کار</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr><th class="text-start">پرسنل</th><td>@Model.Employee?.Name</td></tr>
+                        <tr><th class="text-start">اولویت × اثر (وزن)</th><td>@Model.Priority × @Model.BusinessImpact = @(Model.Priority * Model.BusinessImpact)</td></tr>
+                        <tr><th class="text-start">ساعت تخمینی/واقعی</th><td>@Model.EstimatedHours / @Model.ActualHours</td></tr>
+                        <tr><th class="text-start">موعد/پایان</th><td>@(Model.DueDate?.ToString("yyyy/MM/dd")) — @(Model.CompletedAt?.ToString("yyyy/MM/dd"))</td></tr>
+                        <tr><th class="text-start">مسیر مورد انتظار</th><td>@Model.RequiredPath</td></tr>
+                        <tr><th class="text-start">مسیر اجراشده</th><td>@Model.ActualPath</td></tr>
+                        <tr><th class="text-start">مسیر جایگزین تأییدشده</th><td>@(Model.AlternativePathApproved ? "بله" : "خیر")</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @if (Model.Instruction != null)
+        {
+            <div class="card shadow-sm mt-3">
+                <div class="card-header">مسیر (WHAT/HOW/ACCEPTANCE)</div>
+                <div class="card-body">
+                    <p class="mb-1"><b>WHAT:</b> @Model.Instruction.WhatRequired</p>
+                    <p class="mb-1"><b>HOW:</b> @Model.Instruction.RequiredPath</p>
+                    <p class="mb-0"><b>ACCEPTANCE:</b> @Model.Instruction.AcceptanceCriteria</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-6">
+        @if (c != null)
+        {
+            <div class="card shadow-sm">
+                <div class="card-header">محاسبه‌شده</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0 text-center">
+                        <tbody>
+                            <tr><td class="text-start">Compliance / کیفیت</td><td>@c.Compliance / @c.Quality</td></tr>
+                            <tr><td class="text-start">بهره‌وری / به‌موقع</td><td>@c.Efficiency / @c.Timeliness</td></tr>
+                            <tr><td class="text-start">حل مسئله / مستند / هماهنگی</td><td>@c.ProblemSolving / @c.Documentation / @c.Communication</td></tr>
+                            <tr class="table-light fw-bold"><td class="text-start">امتیاز کار (TaskScore)</td><td>@c.TaskScore.ToString("0.##")</td></tr>
+                            <tr><td class="text-start">هزینه / منفعت</td><td>@c.TotalCost.ToString("N0") / @c.TotalBenefit.ToString("N0")</td></tr>
+                            <tr class="table-light fw-bold"><td class="text-start">ارزش خالص کار</td><td class="@(c.NetValue >= 0 ? "text-success" : "text-danger")">@c.NetValue.ToString("N0")</td></tr>
+                            <tr><td class="text-start">انحراف بدون تأیید</td><td>@(c.UnauthorizedDeviation ? "بله" : "خیر")</td></tr>
+                            <tr><td class="text-start">باگ / باگ بحرانی / دوباره‌کاری</td><td>@c.BugCount / @c.CriticalBugCount / @c.ReworkHours ساعت</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        @if (Model.Risks.Any())
+        {
+            <div class="card shadow-sm mt-3">
+                <div class="card-header">ریسک‌ها</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0 text-center">
+                        <thead class="table-light"><tr><th>نوع</th><th>احتمال</th><th>خسارت</th><th>زیان مورد انتظار</th></tr></thead>
+                        <tbody>
+                            @foreach (var r in Model.Risks)
+                            {
+                                <tr><td>@r.RiskType</td><td>@r.Probability</td><td>@r.Impact.ToString("N0")</td><td>@r.ExpectedLoss.ToString("N0")</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

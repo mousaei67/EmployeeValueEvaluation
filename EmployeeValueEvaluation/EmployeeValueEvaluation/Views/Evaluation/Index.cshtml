@@ -1,0 +1,154 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "داشبورد ارزندگی";
+
+    string ScoreColor(decimal v) =>
+        v >= 80 ? "#146c43" : v >= 70 ? "#198754" : v >= 60 ? "#b58105" : v >= 50 ? "#fd7e14" : "#b02a37";
+
+    string Cls(decimal v, decimal target, bool higherBetter = true)
+    {
+        bool ok = higherBetter ? v >= target : v <= target;
+        if (ok) return "metric-good";
+        bool near = higherBetter ? v >= target * 0.85m : v <= target * 1.3m;
+        return near ? "metric-warn" : "metric-bad";
+    }
+
+    string LevelBadge(DecisionLevel l) => l switch
+    {
+        DecisionLevel.A_Valuable => "bg-success",
+        DecisionLevel.B_ConditionallyValuable => "bg-warning text-dark",
+        DecisionLevel.C_Risky => "bg-danger",
+        _ => "bg-dark"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">داشبورد ارزندگی نیروی برنامه‌نویس</h2>
+        <small class="text-muted">
+            ارزش خالص کل تیم: <b>@Model.TotalNetValue.ToString("N0")</b> تومان |
+            منفعت کل: @Model.TotalBenefit.ToString("N0") | هزینه کل: @Model.TotalCost.ToString("N0")
+        </small>
+    </div>
+    <form asp-action="Recompute" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-outline-primary btn-sm">محاسبه و ذخیره ارزیابی ماه جاری</button>
+    </form>
+</div>
+
+<div class="alert alert-secondary py-2 small mb-3">
+    این جدول برای هر نفر می‌گوید: چقدر ارزنده است (ارزندگی نهایی)، چقدر ارزش اقتصادی ساخته (ارزش خالص/ROI)،
+    کجا مشکل دارد و چه اقدام مدیریتی لازم است. رنگ‌ها نسبت به اهداف KPI هستند
+    (سبز = خوب، نارنجی = نزدیک هدف، قرمز = زیر هدف).
+</div>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center bg-white">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>نام</th>
+                <th>ارزندگی نهایی</th>
+                <th>تفسیر</th>
+                <th>عملکرد</th>
+                <th>اقتصاد</th>
+                <th>ریسک</th>
+                <th>ارزش خالص</th>
+                <th>ROI</th>
+                <th>Compliance</th>
+                <th>Rework</th>
+                <th>حقوق فعلی</th>
+                <th>حقوق منصفانه</th>
+                <th>پتانسیل رشد</th>
+                <th>تصمیم</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ int i = 1; }
+            @foreach (var r in Model.Rows)
+            {
+                if (!r.HasData)
+                {
+                    <tr class="text-muted">
+                        <td>@i</td>
+                        <td>@r.Name</td>
+                        <td colspan="13">— بدون Task تکمیل‌شده —</td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="Tasks" asp-action="Create" asp-route-employeeId="@r.EmployeeId">ثبت کار</a>
+                        </td>
+                    </tr>
+                    i++;
+                    continue;
+                }
+                <tr>
+                    <td>@i</td>
+                    <td class="text-start"><b>@r.Name</b><br /><small class="text-muted">@r.Role</small></td>
+                    <td>
+                        <span class="score-pill" style="background:@ScoreColor(r.FinalValueScore)">@r.FinalValueScore.ToString("0.#")</span>
+                    </td>
+                    <td><small>@r.Interpretation</small></td>
+                    <td class="@Cls(r.Performance, 80)">@r.Performance.ToString("0.#")</td>
+                    <td>@r.EconomicScore.ToString("0")</td>
+                    <td class="@Cls(r.RiskScore, 25, higherBetter:false)">@r.RiskScore.ToString("0.#")</td>
+                    <td class="@(r.NetValue >= 0 ? "metric-good" : "metric-bad")">@r.NetValue.ToString("N0")</td>
+                    <td class="@Cls(r.Roi, 50)">@r.Roi.ToString("0.#")%</td>
+                    <td class="@Cls(r.Compliance, 90)">@r.Compliance.ToString("0.#")%</td>
+                    <td class="@Cls(r.ReworkRatePercent, 5, higherBetter:false)">@r.ReworkRatePercent.ToString("0.#")%</td>
+                    <td>@r.Salary.ToString("N0")</td>
+                    <td>
+                        @r.FairSalary.ToString("N0")
+                        @if (r.SalaryGap > 0)
+                        {
+                            <br />
+
+                            <small class="metric-good">+@r.SalaryGap.ToString("N0")</small>
+                        }
+                        else if (r.SalaryGap < 0)
+                        {
+                            <br />
+
+                            <small class="metric-bad">@r.SalaryGap.ToString("N0")</small>
+                        }
+                    </td>
+                    <td>
+                        @r.PotentialValue.ToString("0.#")
+                        @if (r.ValueGap > 0)
+                        {
+                            <br />
+
+                            <small class="text-primary">(+@r.ValueGap.ToString("0.#"))</small>
+                        }
+                    </td>
+                    <td><span class="badge @LevelBadge(r.Level)">@r.LevelTitle</span></td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@r.EmployeeId">گزارش کامل</a>
+                    </td>
+                </tr>
+                if (r.TopProblems.Any())
+                {
+                    <tr>
+                        <td></td>
+                        <td colspan="15" class="text-start bg-light">
+                            <small>
+                                <b>کجا باید بیشتر مدیریت شود:</b>
+                                @foreach (var p in r.TopProblems.Take(3))
+                                {
+                                    <span class="badge @(p.Severity == Severity.Critical ? "bg-danger" : "bg-warning text-dark") me-1">
+                                        @p.Metric: @p.Value
+                                    </span>
+                                }
+                            </small>
+                        </td>
+                    </tr>
+                }
+                i++;
+            }
+        </tbody>
+    </table>
+</div>
+
+<p class="text-muted small">
+    فرمول ارزندگی نهایی: (۰٫۵۵ × عملکرد + ۰٫۴۵ × امتیاز اقتصادی) × ضریب ریسک —
+    امتیاز اقتصادی از ROI ساخته می‌شود و ضریب ریسک = ۱ − ریسک/۱۰۰.
+</p>

@@ -1,0 +1,111 @@
+﻿@model EmployeeValueEvaluation.Models.Employee
+
+@{
+    ViewData["Title"] = "جزئیات پرسنل";
+}
+
+<div class="container mt-4">
+
+    <h2>جزئیات پرسنل</h2>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    نام
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Name
+                </dd>
+
+                <dt class="col-sm-3">
+                    کد پرسنلی
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.PersonnelCode
+                </dd>
+
+                <dt class="col-sm-3">
+                    سمت
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Role
+                </dd>
+
+                <dt class="col-sm-3">
+                    حقوق
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.BaseSalary.ToString("N0")
+                </dd>
+
+                <dt class="col-sm-3">
+                    تاریخ شروع
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.StartDate.ToString("yyyy/MM/dd")
+                </dd>
+
+                <dt class="col-sm-3">
+                    وضعیت
+                </dt>
+
+                <dd class="col-sm-9">
+
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">
+                            فعال
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            غیرفعال
+                        </span>
+                    }
+
+                </dd>
+
+                <dt class="col-sm-3">
+                    تعداد Task
+                </dt>
+
+                <dd class="col-sm-9">
+                    @(Model.Tasks?.Count ?? 0)
+                </dd>
+
+                <dt class="col-sm-3">
+                    توضیحات
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Description
+                </dd>
+
+            </dl>
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn btn-warning">
+                ویرایش
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                بازگشت
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

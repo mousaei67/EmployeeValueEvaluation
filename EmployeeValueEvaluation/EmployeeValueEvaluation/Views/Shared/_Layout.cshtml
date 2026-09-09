@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - سامانه ارزندگی نیروی برنامه‌نویس</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        body { font-family: Tahoma, "Segoe UI", sans-serif; }
+        .table td, .table th { vertical-align: middle; }
+        .metric-good { color: #146c43; font-weight: 600; }
+        .metric-warn { color: #b58105; font-weight: 600; }
+        .metric-bad  { color: #b02a37; font-weight: 600; }
+        .score-pill { padding:.25rem .6rem; border-radius:1rem; font-weight:700; color:#fff; display:inline-block; min-width:3rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-controller="Evaluation" asp-action="Index">سامانه ارزندگی</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-start">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Evaluation" asp-action="Index">داشبورد ارزندگی</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Tasks" asp-action="Index">کارها (Tasks)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Employees" asp-action="Index">پرسنل</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid px-4">
+        <main role="main" class="pb-3">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success">@TempData["Message"]</div>
+            }
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted mt-4">
+        <div class="container">
+            &copy; 2026 - سامانه ارزندگی نیروی برنامه‌نویس
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

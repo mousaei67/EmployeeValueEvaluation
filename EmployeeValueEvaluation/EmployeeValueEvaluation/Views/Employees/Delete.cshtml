@@ -1,0 +1,41 @@
+﻿@model EmployeeValueEvaluation.Models.Employee
+
+@{
+    ViewData["Title"] = "حذف پرسنل";
+}
+
+<div class="container mt-4">
+
+    <div class="alert alert-danger">
+
+        <h4>آیا از حذف این پرسنل مطمئن هستید؟</h4>
+
+        <p>
+            @Model.Name
+        </p>
+
+        <p>
+            کد پرسنلی:
+            @Model.PersonnelCode
+        </p>
+
+    </div>
+
+    <form asp-action="Delete" method="post">
+
+        <input type="hidden"
+               asp-for="Id" />
+
+        <button type="submit"
+                class="btn btn-danger">
+            بله، حذف شود
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-secondary">
+            انصراف
+        </a>
+
+    </form>
+
+</div>

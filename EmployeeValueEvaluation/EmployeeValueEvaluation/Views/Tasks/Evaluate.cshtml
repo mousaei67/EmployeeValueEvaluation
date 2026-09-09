@@ -1,0 +1,48 @@
+@model TaskEvaluateViewModel
+@{
+    ViewData["Title"] = "ارزیابی کار";
+}
+
+<h2 class="mb-1">ارزیابی کار</h2>
+<p class="text-muted">@Model.TaskTitle — @Model.EmployeeName</p>
+
+<form asp-action="Evaluate" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="TaskId" />
+    <input type="hidden" asp-for="TaskTitle" />
+    <input type="hidden" asp-for="EmployeeName" />
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">امتیازها (۰ تا ۱۰۰)</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4"><label class="form-label">پایبندی به مسیر (Compliance)</label><input asp-for="ComplianceScore" type="number" min="0" max="100" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">کیفیت (Quality)</label><input asp-for="QualityScore" type="number" min="0" max="100" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">تحویل به‌موقع (Timeliness)</label><input asp-for="TimelinessScore" type="number" min="0" max="100" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">حل مسئله (Problem Solving)</label><input asp-for="ProblemSolvingScore" type="number" min="0" max="100" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">مستندسازی (Documentation)</label><input asp-for="DocumentationScore" type="number" min="0" max="100" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">هماهنگی (Communication)</label><input asp-for="CommunicationScore" type="number" min="0" max="100" class="form-control" /></div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">شواهد کیفیت و انحراف</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3"><label class="form-label">شدت انحراف بدون تأیید (۰ تا ۵)</label><input asp-for="UnauthorizedDeviationScore" type="number" min="0" max="5" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">ساعت دوباره‌کاری</label><input asp-for="ReworkHours" type="number" step="0.5" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">تعداد باگ</label><input asp-for="BugCount" type="number" min="0" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">باگ بحرانی</label><input asp-for="CriticalBugCount" type="number" min="0" class="form-control" /></div>
+            <div class="col-12"><label class="form-label">توضیح ارزیاب</label><textarea asp-for="EvaluatorComment" class="form-control" rows="2"></textarea></div>
+            <div class="col-12 form-check ms-2">
+                <input asp-for="MarkCompleted" class="form-check-input" />
+                <label class="form-check-label">این کار «تکمیل‌شده» علامت بخورد و در ارزیابی لحاظ شود</label>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">ذخیره ارزیابی</button>
+    <a class="btn btn-secondary" asp-action="Details" asp-route-id="@Model.TaskId">انصراف</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

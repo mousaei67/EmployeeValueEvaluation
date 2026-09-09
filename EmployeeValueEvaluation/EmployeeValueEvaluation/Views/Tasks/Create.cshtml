@@ -1,0 +1,148 @@
+@model TaskFormViewModel
+@{
+    ViewData["Title"] = "ثبت کار";
+    var employeeList = ViewBag.EmployeeList as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<h2 class="mb-3">ثبت کار جدید</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">اطلاعات کار</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label class="form-label">پرسنل</label>
+                <select asp-for="EmployeeId" class="form-select" asp-items="employeeList">
+                    <option value="">— انتخاب —</option>
+                </select>
+                <span asp-validation-for="EmployeeId" class="text-danger"></span>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">عنوان کار</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label class="form-label">توضیح</label>
+                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">اولویت (۱ تا ۴)</label>
+                <input asp-for="Priority" type="number" min="1" max="4" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">اثر کسب‌وکاری (۱ تا ۵)</label>
+                <input asp-for="BusinessImpact" type="number" min="1" max="5" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">ساعت تخمینی</label>
+                <input asp-for="EstimatedHours" type="number" step="0.5" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">ساعت واقعی</label>
+                <input asp-for="ActualHours" type="number" step="0.5" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">موعد تحویل</label>
+                <input asp-for="DueDate" type="date" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">تاریخ پایان</label>
+                <input asp-for="CompletedAt" type="date" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">وضعیت</label>
+                <select asp-for="Status" class="form-select">
+                    <option value="3">تکمیل‌شده</option>
+                    <option value="2">در حال انجام</option>
+                    <option value="1">در انتظار</option>
+                    <option value="5">متوقف</option>
+                    <option value="4">لغو‌شده</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">مسیر (WHAT / HOW / ACCEPTANCE)</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label class="form-label">چه چیزی باید انجام شود (WHAT)</label>
+                <input asp-for="WhatRequired" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">مسیر/روش مورد انتظار (HOW)</label>
+                <input asp-for="RequiredPath" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">معیار پذیرش (ACCEPTANCE)</label>
+                <input asp-for="AcceptanceCriteria" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">مسیر اجراشده واقعی</label>
+                <input asp-for="ActualPath" class="form-control" />
+            </div>
+            <div class="col-12 form-check ms-2">
+                <input asp-for="AlternativePathApproved" class="form-check-input" />
+                <label class="form-check-label">مسیر جایگزین از قبل تأیید شده بود</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header">هزینه‌ها (تومان)</div>
+                <div class="card-body row g-3">
+                    <div class="col-6"><label class="form-label">مدیریت</label><input asp-for="ManagerHoursCost" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">دوباره‌کاری</label><input asp-for="ReworkCost" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">تأخیر</label><input asp-for="DelayCost" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">فرصت</label><input asp-for="OpportunityCost" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">ریسک</label><input asp-for="RiskCost" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">خارجی</label><input asp-for="ExternalCost" type="number" class="form-control" /></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header">منفعت‌ها (تومان)</div>
+                <div class="card-body row g-3">
+                    <div class="col-6"><label class="form-label">افزایش درآمد</label><input asp-for="RevenueBenefit" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">صرفه‌جویی</label><input asp-for="SavingBenefit" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">جلوگیری از ضرر</label><input asp-for="LossAvoidance" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">ارزش محصول</label><input asp-for="ProductBenefit" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">ارزش استراتژیک</label><input asp-for="StrategicBenefit" type="number" class="form-control" /></div>
+                    <div class="col-6"><label class="form-label">ضریب اطمینان (۰ تا ۱)</label><input asp-for="Confidence" type="number" step="0.05" min="0" max="1" class="form-control" /></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">ریسک (اختیاری)</div>
+        <div class="card-body row g-3">
+            <div class="col-md-4">
+                <label class="form-label">نوع ریسک</label>
+                <select asp-for="RiskType" class="form-select">
+                    <option value="">—</option>
+                    <option value="Deviation">انحراف مسیر</option>
+                    <option value="Technical">فنی</option>
+                    <option value="Dependency">وابستگی</option>
+                    <option value="Continuity">تداوم/خروج</option>
+                    <option value="Security">امنیت</option>
+                </select>
+            </div>
+            <div class="col-md-4"><label class="form-label">احتمال (۰ تا ۱)</label><input asp-for="RiskProbability" type="number" step="0.05" min="0" max="1" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">خسارت احتمالی (تومان)</label><input asp-for="RiskImpact" type="number" class="form-control" /></div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success">ذخیره کار</button>
+    <a class="btn btn-secondary" asp-action="Index">انصراف</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

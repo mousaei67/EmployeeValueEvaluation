@@ -1,0 +1,194 @@
+@model EmployeeEvaluationResult
+@{
+    ViewData["Title"] = $"گزارش ارزندگی — {Model.Name}";
+
+    string SevBadge(Severity s) => s switch
+    {
+        Severity.Critical => "bg-danger",
+        Severity.Warning => "bg-warning text-dark",
+        Severity.Info => "bg-info text-dark",
+        _ => "bg-success"
+    };
+    string SevText(Severity s) => s switch
+    {
+        Severity.Critical => "بحرانی",
+        Severity.Warning => "هشدار",
+        Severity.Info => "نکته",
+        _ => "خوب"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">گزارش ارزندگی: @Model.Name <small class="text-muted">(@Model.Role)</small></h2>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">بازگشت به داشبورد</a>
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="alert alert-warning">@Model.Interpretation</div>
+    <a class="btn btn-primary" asp-controller="Tasks" asp-action="Create" asp-route-employeeId="@Model.EmployeeId">ثبت اولین کار</a>
+    return;
+}
+
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">ارزندگی نهایی</div>
+                <div class="display-6">@Model.FinalValueScore.ToString("0.#")</div>
+                <span class="badge bg-secondary">@Model.Interpretation</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">ارزش خالص</div>
+                <div class="h4 @(Model.NetValue >= 0 ? "text-success" : "text-danger")">@Model.NetValue.ToString("N0")</div>
+                <small class="text-muted">ROI: @Model.Roi.ToString("0.#")% | BCR: @Model.Bcr.ToString("0.##")</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">عملکرد / ریسک</div>
+                <div class="h4">@Model.Performance.ToString("0.#") <span class="text-muted">/</span> <span class="text-danger">@Model.RiskScore.ToString("0.#")</span></div>
+                <small class="text-muted">ضریب ریسک: @Model.RiskFactor.ToString("0.##")</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">تصمیم مدیریتی</div>
+                <div class="h5">@Model.LevelTitle</div>
+                <small class="text-muted">SVR: @Model.Svr.ToString("0.##")</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-primary"><b>تصمیم:</b> @Model.Decision</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">ابعاد عملکرد (وزن‌دار)</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0 text-center">
+                    <tbody>
+                        <tr><td class="text-start">پایبندی به مسیر (Compliance)</td><td>@Model.Compliance.ToString("0.#")%</td></tr>
+                        <tr><td class="text-start">کیفیت (Quality)</td><td>@Model.Quality.ToString("0.#")</td></tr>
+                        <tr><td class="text-start">بهره‌وری (Productivity)</td><td>@Model.Productivity.ToString("0.#")%</td></tr>
+                        <tr><td class="text-start">تحویل به‌موقع (Timeliness)</td><td>@Model.Timeliness.ToString("0.#")</td></tr>
+                        <tr><td class="text-start">حل مسئله (Problem Solving)</td><td>@Model.ProblemSolving.ToString("0.#")</td></tr>
+                        <tr><td class="text-start">مستندسازی (Documentation)</td><td>@Model.Documentation.ToString("0.#")</td></tr>
+                        <tr><td class="text-start">هماهنگی (Communication)</td><td>@Model.Communication.ToString("0.#")</td></tr>
+                        <tr class="table-light fw-bold"><td class="text-start">عملکرد کل</td><td>@Model.Performance.ToString("0.##")</td></tr>
+                        <tr><td class="text-start">نرخ دوباره‌کاری</td><td>@Model.ReworkRatePercent.ToString("0.#")%</td></tr>
+                        <tr><td class="text-start">انحراف بدون تأیید</td><td>@Model.UnauthorizedDeviationCount مورد (UDR @Model.UnauthorizedDeviationRatePercent.ToString("0.#")%)</td></tr>
+                        <tr><td class="text-start">باگ / باگ بحرانی</td><td>@Model.TotalBugs / @Model.CriticalBugs</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-3">
+            <div class="card-header">اقتصاد (هزینه و منفعت)</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0 text-center">
+                    <tbody>
+                        <tr><td class="text-start">حقوق</td><td>@Model.CostSalary.ToString("N0")</td></tr>
+                        <tr><td class="text-start">مزایای جانبی</td><td>@Model.CostSideBenefits.ToString("N0")</td></tr>
+                        <tr><td class="text-start">هزینه مدیریت</td><td>@Model.CostManagement.ToString("N0")</td></tr>
+                        <tr><td class="text-start">هزینه دوباره‌کاری</td><td>@Model.CostRework.ToString("N0")</td></tr>
+                        <tr><td class="text-start">هزینه تأخیر</td><td>@Model.CostDelay.ToString("N0")</td></tr>
+                        <tr><td class="text-start">هزینه فرصت</td><td>@Model.CostOpportunity.ToString("N0")</td></tr>
+                        <tr><td class="text-start">هزینه ریسک</td><td>@Model.CostRisk.ToString("N0")</td></tr>
+                        <tr class="table-light fw-bold"><td class="text-start">هزینه کل</td><td>@Model.TotalCost.ToString("N0")</td></tr>
+                        <tr class="table-light fw-bold"><td class="text-start">منفعت کل</td><td>@Model.TotalBenefit.ToString("N0")</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header">ریسک و حقوق</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0 text-center">
+                    <tbody>
+                        <tr><td class="text-start">ریسک انحراف / فنی</td><td>@Model.DeviationRisk.ToString("0.#") / @Model.TechnicalRisk.ToString("0.#")</td></tr>
+                        <tr><td class="text-start">ریسک وابستگی / تداوم / امنیت</td><td>@Model.DependencyRisk.ToString("0.#") / @Model.ContinuityRisk.ToString("0.#") / @Model.SecurityRisk.ToString("0.#")</td></tr>
+                        <tr class="table-light fw-bold"><td class="text-start">امتیاز ریسک</td><td>@Model.RiskScore.ToString("0.##")</td></tr>
+                        <tr><td class="text-start">حقوق منصفانه (بر پایه ارزش)</td><td>@Model.FairSalary.ToString("N0")</td></tr>
+                        <tr><td class="text-start">حقوق متناسب با عملکرد</td><td>@Model.AdjustedSalary.ToString("N0")</td></tr>
+                        <tr><td class="text-start">پتانسیل ارزندگی</td><td>@Model.PotentialValue.ToString("0.#") (شکاف @Model.ValueGap.ToString("0.#"))</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header">کجا مشکل هست و چه باید کرد</div>
+    <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+            <thead class="table-light">
+                <tr><th>شاخص</th><th>مقدار</th><th>هدف</th><th>وضعیت</th><th>مشکل</th><th>اقدام مدیریتی</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var f in Model.Findings.OrderByDescending(x => x.Severity))
+                {
+                    <tr>
+                        <td>@f.Metric</td>
+                        <td>@f.Value</td>
+                        <td>@f.Target</td>
+                        <td><span class="badge @SevBadge(f.Severity)">@SevText(f.Severity)</span></td>
+                        <td class="small">@f.Problem</td>
+                        <td class="small">@f.Recommendation</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+    <div class="card-header d-flex justify-content-between">
+        <span>کارهای تکمیل‌شده (@Model.Tasks.Count)</span>
+        <a class="btn btn-sm btn-outline-primary" asp-controller="Tasks" asp-action="Create" asp-route-employeeId="@Model.EmployeeId">ثبت کار جدید</a>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-sm mb-0 text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>عنوان</th><th>وزن</th><th>Compliance</th><th>کیفیت</th><th>بهره‌وری</th>
+                    <th>به‌موقع</th><th>امتیاز کار</th><th>هزینه</th><th>منفعت</th><th>خالص</th><th>انحراف</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var t in Model.Tasks)
+                {
+                    <tr>
+                        <td class="text-start">@t.Title</td>
+                        <td>@t.TaskWeight</td>
+                        <td>@t.Compliance.ToString("0")</td>
+                        <td>@t.Quality.ToString("0")</td>
+                        <td>@t.Efficiency.ToString("0")</td>
+                        <td>@t.Timeliness.ToString("0")</td>
+                        <td><b>@t.TaskScore.ToString("0.#")</b></td>
+                        <td>@t.TotalCost.ToString("N0")</td>
+                        <td>@t.TotalBenefit.ToString("N0")</td>
+                        <td class="@(t.NetValue >= 0 ? "text-success" : "text-danger")">@t.NetValue.ToString("N0")</td>
+                        <td>@(t.UnauthorizedDeviation ? "بله" : "-")</td>
+                        <td><a class="btn btn-sm btn-outline-secondary" asp-controller="Tasks" asp-action="Details" asp-route-id="@t.TaskId">جزئیات</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
